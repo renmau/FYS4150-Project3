@@ -11,8 +11,12 @@ void Euler::integrateOneStep(SolarSystem &system)
 {
     system.calculateForcesAndEnergy();
 
-    for(CelestialBody &body : system.bodies()) {
-        body.position += body.velocity*m_dt;
-        body.velocity += body.force / body.mass * m_dt;
+    //for(CelestialBody &body : system.bodies()) {
+
+    for (unsigned int i = 0; i < system.bodies().size(); i++) {
+        CelestialBody& planet = system.m_bodies[i];
+
+        planet.position = planet.position + planet.velocity * m_dt;
+        planet.velocity = planet.velocity + planet.force*m_dt/planet.mass;
     }
 }
