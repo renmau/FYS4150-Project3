@@ -34,7 +34,7 @@ int main(int numArguments, char **arguments)
         integrator.integrateOneStep(solarSystem);
         solarSystem.writeToFile("positions.xyz");
     }
-
+    //hei
     cout << "I just created my first solar system that has " << solarSystem.bodies().size() << " objects." << endl;
     return 0;
 }
