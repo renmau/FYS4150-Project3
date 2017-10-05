@@ -7,6 +7,7 @@ SolarSystem::SolarSystem() :
     m_kineticEnergy(0),
     m_potentialEnergy(0)
 {
+    m_G = 1;
 }
 
 void SolarSystem::createCelestialBody(vec3 position, vec3 velocity, double mass) {

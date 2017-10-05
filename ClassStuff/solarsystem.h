@@ -20,11 +20,12 @@ public:
     void writeToFile(std::string filename);
     std::vector<CelestialBody> &bodies();
 
-private:
     std::vector<CelestialBody> m_bodies;
+private:
     std::ofstream m_file;
     double m_kineticEnergy;
     double m_potentialEnergy;
+    double m_G;
 };
 
 #endif // SOLARSYSTEM_H
