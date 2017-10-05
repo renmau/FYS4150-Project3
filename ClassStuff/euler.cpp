@@ -18,5 +18,6 @@ void Euler::integrateOneStep(SolarSystem &system)
 
         planet.position = planet.position + planet.velocity * m_dt;
         planet.velocity = planet.velocity + planet.force*m_dt/planet.mass;
+
     }
 }

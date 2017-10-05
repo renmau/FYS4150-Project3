@@ -8,7 +8,9 @@ using namespace std;
 
 int main(int numArguments, char **arguments)
 {
-    int numTimesteps = 1000;
+    double years = 100;
+    int numTimesteps = years*6;
+    double dt = years / (numTimesteps-1);
     if(numArguments >= 2) numTimesteps = atoi(arguments[1]);
 
     SolarSystem solarSystem;
@@ -27,12 +29,14 @@ int main(int numArguments, char **arguments)
         cout << "The position of this object is " << body.position << " with velocity " << body.velocity << endl;
     }
 
-    double dt = 0.001;
-    //Euler integrator(dt);
-    VelocityVerlet integrator(dt);
+    Euler integrator(dt);
+    //VelocityVerlet integrator(dt);
+    solarSystem.writeToFile("positions.txt");
+    solarSystem.calculateForcesAndEnergy();
+
     for(int timestep=0; timestep<numTimesteps; timestep++) {
         integrator.integrateOneStep(solarSystem);
-        solarSystem.writeToFile("positions.xyz");
+        solarSystem.writeToFile("positions.txt");
     }
     //hei
     cout << "I just created my first solar system that has " << solarSystem.bodies().size() << " objects." << endl;
