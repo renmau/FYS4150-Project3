@@ -17,6 +17,7 @@ public:
     double totalEnergy() const;
     double potentialEnergy() const;
     double kineticEnergy() const;
+    double angularMomentum() const;
     void writeToFile(std::string filename);
     //void writeToFile_energy(std::string filename);
     std::vector<CelestialBody> &bodies();
@@ -26,6 +27,7 @@ private:
     std::ofstream m_file;
     double m_kineticEnergy;
     double m_potentialEnergy;
+    double m_angularMomentum;
     double m_G;
 };
 

@@ -81,8 +81,8 @@ int main(int numArguments, char **arguments)
     //write initial energy to file:
     solarSystem.calculateForcesAndEnergy();
     ofstream ofile;
-    ofile.open("exercice_3f_full_system.txt",ofstream::app);
-    ofile<<setw(15) << solarSystem.kineticEnergy() << solarSystem.potentialEnergy() <<endl;
+    ofile.open("energy_angmom1.txt",ofstream::app);
+    ofile<<setprecision(30) << solarSystem.kineticEnergy() <<"  "<< setprecision(30) << solarSystem.potentialEnergy()<<"  "<< setprecision(30) << solarSystem.angularMomentum()<<endl;
     ofile<<endl;
     ofile.close();
 
@@ -94,8 +94,8 @@ int main(int numArguments, char **arguments)
         //write energy to file for each step to test conservation:
         solarSystem.calculateForcesAndEnergy();
         ofstream ofile;
-        ofile.open("energy.txt",ofstream::app);
-        ofile<<setprecision(30) << solarSystem.kineticEnergy() <<"  "<< setprecision(30) << solarSystem.potentialEnergy()<<"  " <<endl;
+        ofile.open("energy_angmom1.txt",ofstream::app);
+        ofile<<setprecision(30) << solarSystem.kineticEnergy() <<"  "<< setprecision(30) << solarSystem.potentialEnergy()<<"  "<< setprecision(30) << solarSystem.angularMomentum()<<endl;
     }
     ofile<<endl;
     ofile.close();
