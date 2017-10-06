@@ -4,12 +4,14 @@
 #include "solarsystem.h"
 #include "euler.h"
 #include "velocityverlet.h"
+#include <fstream>
+#include <iomanip>
 using namespace std;
 
 int main(int numArguments, char **arguments)
 {
-    double years = 100;
-    int numTimesteps = years*6;
+    double years = 5;
+    int numTimesteps = years*10;
     double dt = years / (numTimesteps-1);
     if(numArguments >= 2) numTimesteps = atoi(arguments[1]);
 
@@ -29,16 +31,36 @@ int main(int numArguments, char **arguments)
         cout << "The position of this object is " << body.position << " with velocity " << body.velocity << endl;
     }
 
-    Euler integrator(dt);
-    //VelocityVerlet integrator(dt);
-    solarSystem.writeToFile("positions.txt");
+    // advance all planets:
+
+    //Euler integrator(dt);
+    VelocityVerlet integrator(dt);
+
+    solarSystem.writeToFile("test.txt");     // get initial values in text file as well
     solarSystem.calculateForcesAndEnergy();
 
+    //write initial energy to file:
+    solarSystem.calculateForcesAndEnergy();
+    ofstream ofile;
+    ofile.open("energy.txt",ofstream::app);
+    ofile<<setw(15) << solarSystem.kineticEnergy() << solarSystem.potentialEnergy() <<endl;
+    ofile<<endl;
+    ofile.close();
+
+    // forward loop
     for(int timestep=0; timestep<numTimesteps; timestep++) {
         integrator.integrateOneStep(solarSystem);
-        solarSystem.writeToFile("positions.txt");
+        solarSystem.writeToFile("test.txt");
+
+        //write energy to file for each step to test conservation:
+        solarSystem.calculateForcesAndEnergy();
+        ofstream ofile;
+        ofile.open("energy.txt",ofstream::app);
+        ofile<<setprecision(30) << solarSystem.kineticEnergy() <<"  "<< setprecision(30) << solarSystem.potentialEnergy()<<"  " <<endl;
     }
-    //hei
+    ofile<<endl;
+    ofile.close();
+
     cout << "I just created my first solar system that has " << solarSystem.bodies().size() << " objects." << endl;
     return 0;
 }

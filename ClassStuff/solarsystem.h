@@ -18,6 +18,7 @@ public:
     double potentialEnergy() const;
     double kineticEnergy() const;
     void writeToFile(std::string filename);
+    //void writeToFile_energy(std::string filename);
     std::vector<CelestialBody> &bodies();
 
     std::vector<CelestialBody> m_bodies;
