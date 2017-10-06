@@ -11,6 +11,7 @@ SolarSystem::SolarSystem() :
     m_angularMomentum(0)
 {
     m_G = 4*M_PI*M_PI;
+    c = 63239.7263;                   //AU/yr
 }
 
 void SolarSystem::createCelestialBody(vec3 position, vec3 velocity, double mass) {
@@ -38,6 +39,11 @@ void SolarSystem::calculateForcesAndEnergy()
             body2.force -= -m_G*body1.mass*body2.mass/(dr*dr*dr)*deltaRVector;
             //body1.force += -m_G*body1.mass*body2.mass/pow(dr,3)*deltaRVector;
             //body2.force -= -m_G*body1.mass*body2.mass/pow(dr,3)*deltaRVector;
+
+            // for mercury perihelion precession:
+            //body1.force += -m_G*body1.mass*body2.mass/(dr*dr*dr)*deltaRVector - (3*body2.position.cross(body2.velocity).lengthSquared())/(dr*dr*dr*c*c)*deltaRVector;
+            //body2.force -= -m_G*body1.mass*body2.mass/(dr*dr*dr)*deltaRVector;
+
 
 
 
