@@ -1,9 +1,22 @@
 import matplotlib as mpl
 mpl.use('TkAgg') # Ensure that the Tkinter backend is used for generating figures
-
 import numpy as np
 import matplotlib.pyplot as plt
-def plot_planet_oribt(x,y,planet='planet'):
+
+def plot_formatting(fam='serif',fam_font='Computer Modern Roman',font_size=14,tick_size=14):
+	""" you get to define what font and size of xlabels and axis ticks you"""
+	"""like, if you want bold text or not.								  """
+	
+	plt.rc('text',usetex=True)
+	axis_font={'family': fam,'serif':[fam_font],'size':font_size}
+	plt.rc('font',**axis_font)
+	plt.rc('font',weight ='bold')
+	#plt.rcParams['text.latex.preamble']=[r'\boldmath']
+	plt.xticks(fontsize=tick_size)
+	plt.yticks(fontsize=tick_size)
+
+def plot_planet_oribt(x,y,planet='planet',title_label='some title'):
+	#plot_formatting()
 	if isinstance(x[0,:],np.ndarray)==True: # if x is a array of arrays
 		[plt.plot(x[i],y[i],label=planet[i]) for i in range(len(x[:,0]))]
 	else: plt.plot(x,y,label=planet)
@@ -11,6 +24,7 @@ def plot_planet_oribt(x,y,planet='planet'):
 	plt.legend()
 	plt.xlabel('x')
 	plt.ylabel('y(x)')
+	plt.title(title_label)
 	plt.show()
 
 def three_body_problem():
@@ -22,7 +36,7 @@ def three_body_problem():
 	x_planet = np.array([x_sun, x_earth, x_jupiter])
 	y_planet = np.array([y_sun, y_earth, y_jupiter])
 	planet_label = ['Sun','Earth','Jupiter']
-	plot_planet_oribt(x_planet,y_planet,planet_label)
+	plot_planet_oribt(x_planet,y_planet,planet_label,'Three-body-problem Sun-Earth-Jupiter')
 
 def full_system():# entire classical solar system
 	N = np.genfromtxt('exercice_3f_full_system.txt') 	
@@ -43,7 +57,7 @@ def full_system():# entire classical solar system
 	y_planet=np.array([y_sun,y_mercury,y_venus,y_earth,y_mars,y_jupiter,y_saturn,y_neptune,y_uranus,y_pluto])
 	planet_label = ['Sun','Mercury','Venus','Earth','Mars','Jupiter','Saturn','Neptune','Uranus','Pluto']
 
-	plot_planet_oribt(x_planet,y_planet,planet_label)
+	plot_planet_oribt(x_planet,y_planet,planet_label,'The classic solar system')
 three_body_problem()
 full_system()
 '''
