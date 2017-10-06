@@ -12,10 +12,12 @@ using namespace std;
 
 int main(int numArguments, char **arguments)
 {
+    char *outfilename;
+    outfilename = arguments[1];
     double years = 50;
     int numTimesteps = years*80;
     double dt = years / (numTimesteps-1);
-    if(numArguments >= 2) numTimesteps = atoi(arguments[1]);
+    if(numArguments >= 3) numTimesteps = atoi(arguments[2]);
 
 
     SolarSystem solarSystem;
@@ -80,7 +82,7 @@ int main(int numArguments, char **arguments)
     //Euler integrator(dt);
     VelocityVerlet integrator(dt);
 
-    solarSystem.writeToFile("exercice_3f_full_system.txt");     // get initial values in text file as well
+    solarSystem.writeToFile(outfilename);     // get initial values in text file as well
     solarSystem.calculateForcesAndEnergy();
 
     //write initial energy to file:
@@ -94,7 +96,7 @@ int main(int numArguments, char **arguments)
     // forward loop
     for(int timestep=0; timestep<numTimesteps; timestep++) {
         integrator.integrateOneStep(solarSystem);
-        solarSystem.writeToFile("exercice_3f_full_system.txt");
+        solarSystem.writeToFile(outfilename);
 
         //write energy to file for each step to test conservation:
         solarSystem.calculateForcesAndEnergy();
