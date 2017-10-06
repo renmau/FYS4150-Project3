@@ -1,3 +1,4 @@
+#define _USE_MATH_DEFINES
 #include "solarsystem.h"
 #include <iostream>
 #include <iomanip>
@@ -34,6 +35,10 @@ void SolarSystem::calculateForcesAndEnergy()
 
             body1.force += -m_G*body1.mass*body2.mass/(dr*dr*dr)*deltaRVector;
             body2.force -= -m_G*body1.mass*body2.mass/(dr*dr*dr)*deltaRVector;
+            //body1.force += -m_G*body1.mass*body2.mass/pow(dr,3)*deltaRVector;
+            //body2.force -= -m_G*body1.mass*body2.mass/pow(dr,3)*deltaRVector;
+
+
 
             m_potentialEnergy += -m_G*body1.mass*body2.mass/(dr);
         }
