@@ -42,7 +42,7 @@ void SolarSystem::calculateForcesAndEnergy()
 
             // for mercury perihelion precession:
             body1.force += -m_G*body1.mass*body2.mass/(dr*dr*dr)*deltaRVector - (3*body2.position.cross(body2.velocity).lengthSquared())/(dr*dr*dr*c*c)*deltaRVector;
-            body2.force -= -m_G*body1.mass*body2.mass/(dr*dr*dr)*deltaRVector;
+            body2.force -= -m_G*body1.mass*body2.mass/(dr*dr*dr)*deltaRVector - (3*body2.position.cross(body2.velocity).lengthSquared())/(dr*dr*dr*c*c)*deltaRVector;
 
 
 
