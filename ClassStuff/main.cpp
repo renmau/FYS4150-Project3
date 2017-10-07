@@ -41,7 +41,7 @@ SolarSystem ThreeBodyProblem(bool fixed_CM){
         return solarSystem;
 
     }
-    // Three body problem without correctionfor center-of-mass
+    // Three body problem without correction for center-of-mass
     else{
         SolarSystem solarSystem = TwoBodyProblem();
         // Jupiter
@@ -130,8 +130,8 @@ int main(int numArguments, char **arguments)
     //write initial energy to file:
     solarSystem.calculateForcesAndEnergy();
     ofstream ofile;
-    ofile.open("energy_angmom_mercury7.txt",ofstream::app);
-    ofile<<setprecision(30) << solarSystem.kineticEnergy() <<"  "<< setprecision(30) << solarSystem.potentialEnergy()<<"  "<< setprecision(30) << solarSystem.angularMomentum()<<endl;
+    ofile.open("E_L.txt",ofstream::app);
+    ofile<<setprecision(30) << solarSystem.kineticEnergy() <<"  "<< setprecision(30) << solarSystem.potentialEnergy()<<"  "<< setprecision(30) << solarSystem.angularMomentum().length()<<endl;
     ofile<<endl;
     ofile.close();
 
@@ -143,8 +143,8 @@ int main(int numArguments, char **arguments)
         //write energy to file for each step to test conservation:
         solarSystem.calculateForcesAndEnergy();
         ofstream ofile;
-        ofile.open("energy_angmom_mercury7.txt",ofstream::app);
-        ofile<<setprecision(30) << solarSystem.kineticEnergy() <<"  "<< setprecision(30) << solarSystem.potentialEnergy()<<"  "<< setprecision(30) << solarSystem.angularMomentum()<<endl;
+        ofile.open("E_L.txt",ofstream::app);
+        ofile<<setprecision(30) << solarSystem.kineticEnergy() <<"  "<< setprecision(30) << solarSystem.potentialEnergy()<<"  "<< setprecision(30) << solarSystem.angularMomentum().length()<<endl;
     }
     ofile<<endl;
     ofile.close();

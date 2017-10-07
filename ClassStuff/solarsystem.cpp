@@ -8,7 +8,7 @@ using namespace std;
 SolarSystem::SolarSystem() :
     m_kineticEnergy(0),
     m_potentialEnergy(0),
-    m_angularMomentum(0)
+    m_angularMomentum(0,0,0)
 {
     m_G = 4*M_PI*M_PI;
     c = 63239.7263;                   //AU/yr
@@ -51,7 +51,7 @@ void SolarSystem::calculateForcesAndEnergy()
         }
 
         m_kineticEnergy += 0.5*body1.mass*body1.velocity.lengthSquared();
-        m_angularMomentum += (body1.position.cross(body1.velocity*body1.mass)).length();
+        m_angularMomentum += (body1.position.cross(body1.velocity*body1.mass));
     }
 }
 
@@ -75,7 +75,7 @@ double SolarSystem::kineticEnergy() const
     return m_kineticEnergy;
 }
 
-double SolarSystem::angularMomentum() const
+vec3 SolarSystem::angularMomentum() const
 {
     return m_angularMomentum;
 }
