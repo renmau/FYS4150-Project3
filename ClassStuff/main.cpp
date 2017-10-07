@@ -14,8 +14,8 @@ int main(int numArguments, char **arguments)
 {
     char *outfilename;
     outfilename = arguments[1];
-    double years = 50;
-    int numTimesteps = years*80;
+    double years = 5.0;
+    int numTimesteps = years*100;
     double dt = years / (numTimesteps-1);
     if(numArguments >= 3) numTimesteps = atoi(arguments[2]);
 
@@ -44,7 +44,8 @@ int main(int numArguments, char **arguments)
     solarSystem.createCelestialBody( rJ, vJ, 9.5e-4);
     */
 
-
+    // full solar system:
+    /*
     // The Sun
     solarSystem.createCelestialBody( vec3(2.280645281880971E-03,5.669034916996534E-03,-1.316063812538178E-04), vec3(-5.124710550422158E-06*365., 5.551631297499966E-06*365., 1.189826204505761E-07*365.), 1.0 );
     //The Earth
@@ -65,8 +66,18 @@ int main(int numArguments, char **arguments)
     solarSystem.createCelestialBody( vec3(1.787905976395623E+01,8.773022260100626,-1.990427195843487E-01), vec3(-1.761322338307447E-03,3.347557466700209E-03,3.516031928207541E-05)*365., 4.4e-5);
     // Pluto
     solarSystem.createCelestialBody( vec3(1.051352392432785E+01,-3.171624029129188E+01,3.527021366368159E-01), vec3(3.048301492667712E-03,3.404636168561237E-04,-9.058944090468905E-04)*365., 6.55e-9);
+    */
 
-
+    // For Mercury perihelion precession:
+    double mM = 1.65e-7;
+    vec3 vM(0,12.44,0);
+    vec3 rM = vec3(0.3075, 0, 0);
+    vec3 rSun = vec3(0, 0, 0);
+    vec3 vSun = vec3(0,0,0);
+    // The Sun
+    solarSystem.createCelestialBody( rSun, vSun, 1.0 );
+    //Mercury
+    solarSystem.createCelestialBody( rM, vM, mM );
 
 
     // To get a list (a reference, not copy) of all the bodies in the solar system, we use the .bodies() function
@@ -88,7 +99,7 @@ int main(int numArguments, char **arguments)
     //write initial energy to file:
     solarSystem.calculateForcesAndEnergy();
     ofstream ofile;
-    ofile.open("energy_angmom1.txt",ofstream::app);
+    ofile.open("energy_angmom_mercury6.txt",ofstream::app);
     ofile<<setprecision(30) << solarSystem.kineticEnergy() <<"  "<< setprecision(30) << solarSystem.potentialEnergy()<<"  "<< setprecision(30) << solarSystem.angularMomentum()<<endl;
     ofile<<endl;
     ofile.close();
@@ -101,7 +112,7 @@ int main(int numArguments, char **arguments)
         //write energy to file for each step to test conservation:
         solarSystem.calculateForcesAndEnergy();
         ofstream ofile;
-        ofile.open("energy_angmom1.txt",ofstream::app);
+        ofile.open("energy_angmom_mercury6.txt",ofstream::app);
         ofile<<setprecision(30) << solarSystem.kineticEnergy() <<"  "<< setprecision(30) << solarSystem.potentialEnergy()<<"  "<< setprecision(30) << solarSystem.angularMomentum()<<endl;
     }
     ofile<<endl;

@@ -29,6 +29,7 @@ private:
     double m_potentialEnergy;
     double m_angularMomentum;
     double m_G;
+    double c;
 };
 
 #endif // SOLARSYSTEM_H
