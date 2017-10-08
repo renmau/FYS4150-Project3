@@ -24,8 +24,8 @@ def plot_planet_oribt(x,y,planet_label='_nolegend_',title_label=' ',hold=False):
 	else: 
 		plt.plot(x,y,label=planet_label)
 	plt.axis('equal')
-	plt.xlabel('x')
-	plt.ylabel('y(x)')
+	plt.xlabel('x [AU]')
+	plt.ylabel('y(x) [AU]')
 	plt.title(title_label)
 	plt.tight_layout()
 	if hold !=True: 
@@ -34,8 +34,10 @@ def plot_planet_oribt(x,y,planet_label='_nolegend_',title_label=' ',hold=False):
 
 
 def two_body_problem():
-	N1 = np.genfromtxt('exercice_3b_se_euler.txt')
-	N2 = np.genfromtxt('exercice_3b_se_verlet.txt')  	 
+	#N1 = np.genfromtxt('exercice_3b_se_euler.txt')
+	#N2 = np.genfromtxt('exercice_3b_se_verlet.txt')
+	N1 = np.genfromtxt('b_euler10_5yr.txt')
+	N2 = np.genfromtxt('b_verlet10_5yr.txt')  	 
 	x_sun_e, y_sun_e, z_sun_e 			= N1[:,0], N1[:,1], N1[:,2]						 							 
 	x_earth_e, y_earth_e, z_earth_e 	= N1[:,3], N1[:,4], N1[:,5]
 
@@ -45,7 +47,7 @@ def two_body_problem():
 	x_planet = np.array([x_sun_e, x_earth_e, x_sun_v, x_earth_v])
 	y_planet = np.array([y_sun_e, y_earth_e, y_sun_v, y_earth_v])
 	planet_label = ['_nolegend_','Earth Euler','_nolegend_','Earth V-Verlet']
-	plot_planet_oribt(x_planet, y_planet, planet_label,'Two-body-problem Sun-Earth')
+	plot_planet_oribt(x_planet, y_planet, planet_label,'Two-body-problem Sun-Earth, 5 years 10 steps/year')
 
 def three_body_problem():
 	N = np.genfromtxt('exercice_3f_je.txt')
@@ -97,7 +99,8 @@ def mercury_perihelion():
 	plt.legend()
 	plt.show()
 
-#two_body_problem()
-three_body_problem()
+plot_formatting()
+two_body_problem()
+#three_body_problem()
 #full_system()
 #mercury_perihelion()

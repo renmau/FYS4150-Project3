@@ -7,6 +7,8 @@
 #include "velocityverlet.h"
 #include <fstream>
 #include <iomanip>
+#include "time.h"
+#include <chrono>
 
 using namespace std;
 
@@ -99,17 +101,17 @@ int main(int numArguments, char **arguments)
 {
     char *outfilename;
     outfilename = arguments[1];
-    double years = 50.0;
-    int numTimesteps = years*100;
+    double years = 100.0;
+    int numTimesteps = years*10000;
     double dt = years / (numTimesteps-1);
     if(numArguments >= 3) numTimesteps = atoi(arguments[2]);
     bool fixed_CM = true;
     bool mercury = true;
 
-    //SolarSystem solarSystem = TwoBodyProblem();
+    SolarSystem solarSystem = TwoBodyProblem();
     //SolarSystem solarSystem = ThreeBodyProblem(fixed_CM);
     //SolarSystem solarSystem = FullSystem();
-    SolarSystem solarSystem = MercuryPerihelionPrecession();
+    //SolarSystem solarSystem = MercuryPerihelionPrecession();
 
 
     // To get a list (a reference, not copy) of all the bodies in the solar system, we use the .bodies() function
@@ -131,10 +133,13 @@ int main(int numArguments, char **arguments)
     //write initial energy to file:
     solarSystem.calculateForcesAndEnergy();
     ofstream ofile;
-    ofile.open("E_L.txt",ofstream::app);
+    ofile.open("hei2.txt",ofstream::app);
     ofile<<setprecision(30) << solarSystem.kineticEnergy() <<"  "<< setprecision(30) << solarSystem.potentialEnergy()<<"  "<< setprecision(30) << solarSystem.angularMomentum().length()<<endl;
     ofile<<endl;
     ofile.close();
+
+    clock_t start1, finish1;
+    start1 = clock();
 
     // forward loop
     for(int timestep=0; timestep<numTimesteps; timestep++) {
@@ -144,7 +149,7 @@ int main(int numArguments, char **arguments)
         //write energy to file for each step to test conservation:
         solarSystem.calculateForcesAndEnergy();
         ofstream ofile;
-        ofile.open("E_L.txt",ofstream::app);
+        ofile.open("hei2.txt",ofstream::app);
         // test to write perihelion angle to file for mercury case:
         /*
         if mercury = true{
@@ -157,6 +162,10 @@ int main(int numArguments, char **arguments)
     }
     ofile<<endl;
     ofile.close();
+
+    finish1=clock();
+    double timeused1 = (double)(finish1-start1)/(CLOCKS_PER_SEC);
+    cout <<"time used to calculate orbits (and write to file): "<<timeused1<<endl;
 
     cout << "I just created my first solar system that has " << solarSystem.bodies().size() << " objects." << endl;
     return 0;
