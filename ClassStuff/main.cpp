@@ -104,6 +104,7 @@ int main(int numArguments, char **arguments)
     double dt = years / (numTimesteps-1);
     if(numArguments >= 3) numTimesteps = atoi(arguments[2]);
     bool fixed_CM = true;
+    bool mercury = true;
 
     //SolarSystem solarSystem = TwoBodyProblem();
     //SolarSystem solarSystem = ThreeBodyProblem(fixed_CM);
@@ -144,6 +145,14 @@ int main(int numArguments, char **arguments)
         solarSystem.calculateForcesAndEnergy();
         ofstream ofile;
         ofile.open("E_L.txt",ofstream::app);
+        // test to write perihelion angle to file for mercury case:
+        /*
+        if mercury = true{
+                double x_p = ?;
+                double y_p = ?;
+                tan_theta = x_p/y_p;
+                ofile<<setprecision(30) << solarSystem.kineticEnergy() <<"  "<< setprecision(30) << solarSystem.potentialEnergy()<<"  "<< setprecision(30) << solarSystem.angularMomentum().length()<<"  "<< setprecision(30) <<tan_theta<<endl;
+                } */
         ofile<<setprecision(30) << solarSystem.kineticEnergy() <<"  "<< setprecision(30) << solarSystem.potentialEnergy()<<"  "<< setprecision(30) << solarSystem.angularMomentum().length()<<endl;
     }
     ofile<<endl;
