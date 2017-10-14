@@ -28,7 +28,7 @@ SolarSystem ThreeBodyProblem(bool fixed_CM){
     if (fixed_CM == true){
         SolarSystem solarSystem;
         double mE = 3e-6;
-        double mJ = 9.5e-4*1000;
+        double mJ = 9.5e-4;
         vec3 vE(0, sqrt(4*M_PI*M_PI), 0);
 
         vec3 vSun=-mE*vE - mJ*vJ;
@@ -101,17 +101,17 @@ int main(int numArguments, char **arguments)
 {
     char *outfilename;
     outfilename = arguments[1];
-    double years = 20.0;
-    int numTimesteps = years*10000;
+    double years = 10.0;
+    int numTimesteps = years*1000;
     double dt = years / (numTimesteps-1);
     if(numArguments >= 3) numTimesteps = atoi(arguments[2]);
     bool fixed_CM = true;
     bool mercury = true;
 
     //SolarSystem solarSystem = TwoBodyProblem();
-    SolarSystem solarSystem = ThreeBodyProblem(fixed_CM);
+    //SolarSystem solarSystem = ThreeBodyProblem(fixed_CM);
     //SolarSystem solarSystem = FullSystem();
-    //SolarSystem solarSystem = MercuryPerihelionPrecession();
+    SolarSystem solarSystem = MercuryPerihelionPrecession();
 
 
     // To get a list (a reference, not copy) of all the bodies in the solar system, we use the .bodies() function
