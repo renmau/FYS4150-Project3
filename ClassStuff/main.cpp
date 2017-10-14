@@ -28,7 +28,7 @@ SolarSystem ThreeBodyProblem(bool fixed_CM){
     if (fixed_CM == true){
         SolarSystem solarSystem;
         double mE = 3e-6;
-        double mJ = 9.5e-4;
+        double mJ = 9.5e-4*1000;
         vec3 vE(0, sqrt(4*M_PI*M_PI), 0);
 
         vec3 vSun=-mE*vE - mJ*vJ;
@@ -101,15 +101,15 @@ int main(int numArguments, char **arguments)
 {
     char *outfilename;
     outfilename = arguments[1];
-    double years = 100.0;
-    int numTimesteps = years*1000;
+    double years = 20.0;
+    int numTimesteps = years*10000;
     double dt = years / (numTimesteps-1);
     if(numArguments >= 3) numTimesteps = atoi(arguments[2]);
     bool fixed_CM = true;
     bool mercury = true;
 
-    SolarSystem solarSystem = TwoBodyProblem();
-    //SolarSystem solarSystem = ThreeBodyProblem(fixed_CM);
+    //SolarSystem solarSystem = TwoBodyProblem();
+    SolarSystem solarSystem = ThreeBodyProblem(fixed_CM);
     //SolarSystem solarSystem = FullSystem();
     //SolarSystem solarSystem = MercuryPerihelionPrecession();
 
@@ -133,7 +133,7 @@ int main(int numArguments, char **arguments)
     //write initial energy to file:
     solarSystem.calculateForcesAndEnergy();
     ofstream ofile;
-    ofile.open("hei.txt",ofstream::app);
+    ofile.open("3body.txt",ofstream::app);
     ofile<<setprecision(30) << solarSystem.kineticEnergy() <<"  "<< setprecision(30) << solarSystem.potentialEnergy()<<"  "<< setprecision(30) << solarSystem.angularMomentum().length()<<endl;
     ofile<<endl;
     ofile.close();
@@ -149,7 +149,7 @@ int main(int numArguments, char **arguments)
         //write energy to file for each step to test conservation:
         solarSystem.calculateForcesAndEnergy();
         ofstream ofile;
-        ofile.open("hei.txt",ofstream::app);
+        ofile.open("3body.txt",ofstream::app);
         // test to write perihelion angle to file for mercury case:
         /*
         if mercury = true{
