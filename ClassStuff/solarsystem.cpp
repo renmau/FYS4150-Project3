@@ -36,14 +36,14 @@ void SolarSystem::calculateForcesAndEnergy()
             vec3 deltaRVector = body1.position - body2.position;
             double dr = deltaRVector.length();
 
-            body1.force += -m_G*body1.mass*body2.mass/(dr*dr*dr)*deltaRVector;
-            body2.force -= -m_G*body1.mass*body2.mass/(dr*dr*dr)*deltaRVector;
+            //body1.force += -m_G*body1.mass*body2.mass/(dr*dr*dr)*deltaRVector;
+            //body2.force -= -m_G*body1.mass*body2.mass/(dr*dr*dr)*deltaRVector;
             //body1.force += -m_G*body1.mass*body2.mass/pow(dr,3.95)*deltaRVector;
             //body2.force -= -m_G*body1.mass*body2.mass/pow(dr,3.95)*deltaRVector;
 
             // for mercury perihelion precession:
-            //body1.force += -m_G*body1.mass*body2.mass/(dr*dr*dr)*deltaRVector - (3*body2.position.cross(body2.velocity).lengthSquared())/(dr*dr*dr*c*c)*deltaRVector;
-            //body2.force -= -m_G*body1.mass*body2.mass/(dr*dr*dr)*deltaRVector - (3*body2.position.cross(body2.velocity).lengthSquared())/(dr*dr*dr*c*c)*deltaRVector;
+            body1.force += -m_G*body1.mass*body2.mass/(dr*dr*dr)*deltaRVector - (3*body2.position.cross(body2.velocity).lengthSquared())/(dr*dr*dr*c*c)*deltaRVector;
+            body2.force -= -m_G*body1.mass*body2.mass/(dr*dr*dr)*deltaRVector - (3*body2.position.cross(body2.velocity).lengthSquared())/(dr*dr*dr*c*c)*deltaRVector;
 
 
 

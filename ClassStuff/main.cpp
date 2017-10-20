@@ -107,8 +107,8 @@ int main(int numArguments, char **arguments)
 {
     char *outfilename;
     outfilename = arguments[1];
-    double years = 100.0;
-    int numTimesteps = years*100;
+    double years = 10.0;
+    int numTimesteps = years*100000;
     double dt = years / (numTimesteps-1);
     if(numArguments >= 3) numTimesteps = atoi(arguments[2]);
     bool fixed_CM = true;
