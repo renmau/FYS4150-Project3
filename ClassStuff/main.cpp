@@ -92,14 +92,10 @@ SolarSystem MercuryPerihelionPrecession(){
     double mM = 1.65e-7;
     vec3 vM(0,12.44,0);
     vec3 rM = vec3(0.3075, 0, 0);
-    vec3 rSun = vec3(0, 0, 0);
-    //vec3 vSun = vec3(0,0,0);
-    vec3 vSun=-mM*vM;
-    vec3 CM = (rM*mM)/(mM+1.);
     // The Sun
-    solarSystem.createCelestialBody( rSun-CM, vSun, 1.0 );
+    solarSystem.createCelestialBody( vec3(0,0,0), vec3(0,0,0), 1.0 );
     //Mercury
-    solarSystem.createCelestialBody( rM-CM, vM, mM );
+    solarSystem.createCelestialBody( rM, vM, mM );
 
     return solarSystem;
 }
@@ -107,8 +103,8 @@ int main(int numArguments, char **arguments)
 {
     char *outfilename;
     outfilename = arguments[1];
-    double years = 10.0;
-    int numTimesteps = years*100000;
+    double years = 100.;
+    int numTimesteps = years*10000000.;
     double dt = years / (numTimesteps-1);
     if(numArguments >= 3) numTimesteps = atoi(arguments[2]);
     bool fixed_CM = true;
@@ -133,13 +129,13 @@ int main(int numArguments, char **arguments)
     //Euler integrator(dt);
     VelocityVerlet integrator(dt);
 
-    solarSystem.writeToFile(outfilename);     // get initial values in text file as well
+    //solarSystem.writeToFile(outfilename);     // get initial values in text file as well
     solarSystem.calculateForcesAndEnergy();
-
+    solarSystem.setIntegrator(&integrator);
     //write initial energy to file:
     solarSystem.calculateForcesAndEnergy();
     ofstream ofile;
-    ofile.open("ignore.txt");
+    ofile.open("ignore_t.txt");
     ofile<<setprecision(30) << solarSystem.kineticEnergy() <<"  "<< setprecision(30) << solarSystem.potentialEnergy()<<"  "<< setprecision(30) << solarSystem.angularMomentum().length()<<endl;
     ofile<<endl;
     ofile.close();
@@ -149,18 +145,22 @@ int main(int numArguments, char **arguments)
 
     // forward loop
     for(int timestep=0; timestep<numTimesteps; timestep++) {
+        solarSystem.mercuryAngles(timestep);
+
         integrator.integrateOneStep(solarSystem);
-        solarSystem.writeToFile(outfilename);
+        //solarSystem.writeToFile(outfilename);
 
         //write energy to file for each step to test conservation:
         solarSystem.calculateForcesAndEnergy();
-        ofstream ofile;
+
+        //ofstream ofile;
         //ofile.open("ignore.txt",ofstream::app);
-        ofile.open("ignore.txt",ofstream::app);
-        ofile<<setprecision(30) << solarSystem.kineticEnergy() <<"  "<< setprecision(30) << solarSystem.potentialEnergy()<<"  "<< setprecision(30) << solarSystem.angularMomentum().length()<<endl;
+        //ofile.open("ignore.txt",ofstream::app);
+        //ofile<<setprecision(30) << solarSystem.kineticEnergy() <<"  "<< setprecision(30) << solarSystem.potentialEnergy()<<"  "<< setprecision(30) << solarSystem.angularMomentum().length()<<endl;
+
     }
-    ofile<<endl;
-    ofile.close();
+    //ofile<<endl;
+    //ofile.close();
 
     finish1=clock();
     double timeused1 = (double)(finish1-start1)/(CLOCKS_PER_SEC);
