@@ -148,7 +148,8 @@ int main(int numArguments, char **arguments)
         solarSystem.mercuryAngles(timestep);
 
         integrator.integrateOneStep(solarSystem);
-        //solarSystem.writeToFile(outfilename);
+        //if(timestep>(numTimesteps-numTimesteps/years)){
+        //solarSystem.writeToFile(outfilename);//}
 
         //write energy to file for each step to test conservation:
         solarSystem.calculateForcesAndEnergy();

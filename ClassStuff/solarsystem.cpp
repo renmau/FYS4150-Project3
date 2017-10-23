@@ -42,7 +42,7 @@ void SolarSystem::calculateForcesAndEnergy()
             //body2.force -= -m_G*body1.mass*body2.mass/pow(dr,3.95)*deltaRVector;
 
             // for mercury perihelion precession:
-            body1.force += -m_G*body1.mass*body2.mass/(dr*dr*dr)*deltaRVector;// (3*body2.position.cross(body2.velocity).lengthSquared())/(dr*dr*dr*c*c)*deltaRVector;
+            body1.force += -m_G*body1.mass*body2.mass/(dr*dr*dr)*deltaRVector;// - (3*body2.position.cross(body2.velocity).lengthSquared())/(dr*dr*dr*c*c)*deltaRVector;
             body2.force -= -m_G*body1.mass*body2.mass/(dr*dr*dr)*deltaRVector - (3*body2.position.cross(body2.velocity).lengthSquared())/(dr*dr*dr*c*c)*deltaRVector;
 
 
@@ -66,16 +66,18 @@ void SolarSystem::mercuryAngles(int timestep)
 
     if(r_1<r_2 && r_1<r_now && timestep>3){
         if(!m_file_angle.good()) {
-            m_file_angle.open("mercury_angle_10-9.txt", ofstream::out);
+            m_file_angle.open("mercury_angle_10_7.txt", ofstream::out);
             if(!m_file_angle.good()) {
-                cout << "Error opening file " << "mercury_angle_10-9.txt" << ". Aborting!" << endl;
+                cout << "Error opening file " << "mercury_angle_10_7.txt" << ". Aborting!" << endl;
                 terminate();
             }
         }
+        //cout << r_2<<"   "<<r_1<<"   "<<r_now<<endl;
         double xp = m_integrator->r_rel[0];
         double yp = m_integrator->r_rel[1];
         m_angle += atan2(yp,xp);
-        m_file_angle << setprecision(10) << m_angle<<"    "<< r_1;
+        m_file_angle << setprecision(10) << m_angle<<"    "<< r_1<<"      "<< setprecision(10) << timestep;
+        //m_file_angle << setprecision(10) << xp<<"    "<<setprecision(10) << yp<< "   "<<setprecision(10) <<r_1;
         m_file_angle << endl;
         //cout<< setprecision(10) << m_angle <<"    "<< r_1 << endl;
     }

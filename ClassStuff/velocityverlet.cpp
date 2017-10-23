@@ -9,7 +9,8 @@ VelocityVerlet::VelocityVerlet(double dt) :
 
 void VelocityVerlet::integrateOneStep(SolarSystem &system)
 {
-    r_rel = system.m_bodies[1].position - system.m_bodies[0].position;
+    r_rel.zeros();
+    r_rel += system.m_bodies[1].position - system.m_bodies[0].position;
     for (unsigned int i = 0; i < system.bodies().size();i++){
         CelestialBody& planet = system.m_bodies[i];
 

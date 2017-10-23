@@ -39,7 +39,7 @@ def plot_planet_orbit(x,y,planet_label='_nolegend_',title_label=' ',hold=False):
 def plot_conserved(x,y,plot_label,y_label,hold=False):
 	""" Plots the conserved quantities kinetic and potential energy, and the angular momentum
 		Use hold=True to add plots or do other things in the function calling on this one"""
-	plot_formatting()
+	#plot_formatting()
 	if isinstance(y[0],np.ndarray)==True: # if x is a array of arrays
 		[plt.plot(x, y[i], label=plot_label[i]) for i in range(len(y[:,0]))]
 		#if planet_label !='_nolegend_': plt.legend()
@@ -135,36 +135,39 @@ def full_system():
 
 def mercury_perihelion():
 	"""Plots Mercury orbit, calculates the perihelion angle"""
-	N = np.genfromtxt('exercise_3g_mercury.txt')
-	N = np.genfromtxt('mercury_10000.txt')
+	#N1 = np.genfromtxt('mercury_10000_orbit.txt')
+	N2 = np.genfromtxt('mercury_10000_angle.txt')
+	N3 = np.genfromtxt('mercury_angle_10_7.txt')
 	perihel=0.3075 # AU
-	x_sun, y_sun, z_sun 			= N[:,0], N[:,1], N[:,2]						 							 
-	x_mercury, y_mercury, z_mercury	= N[:,3], N[:,4], N[:,5]
+	perangle = 43*np.pi/(180*60*60)
 
-	rad = 43*np.pi/(180.*60.*60.)
-	print 'correct value: ',rad, 'radians'
+	print 'correct angle', perangle, 'correct perihel', perihel
 
-	pr = np.sqrt(x_mercury**2+y_mercury**2)
-	index = np.argmin(abs(pr[-5000:]))
-	xp = x_mercury[-5000+index]
-	yp = y_mercury[-5000+index]
+	#x_sun, y_sun, z_sun 			= N1[:,0], N1[:,1], N1[:,2]						 							 
+	#x_mercury, y_mercury, z_mercury	= N1[:,3], N1[:,4], N1[:,5]
 
-	print 'perihelion: ', np.amin(pr),index
-	print 'xp: ', xp, ', yp: ', yp, 'perihelion: ',np.sqrt(xp**2+yp**2)
-	print np.arctan(yp/xp)
+	# contains x,y coordinates and rp
+	xp,yp,rp = N2[:,0],N2[:,1],N2[:,2]
+	angles1 = np.arctan2(yp,xp)
+	print 'calculated angle1: ', angles1[-1], ', rp1: ', rp[-1]
 
+	# constains already computed angles, the timesteps and rp
+	angles2, r,t = N3[:,0],N3[:,1],N3[:,2]
+	print 'calculated angle2: ',angles2[-1],', rp2:',r[-1]
+
+	'''
 	x_planet=np.array([x_sun,x_mercury])
 	y_planet=np.array([y_sun,y_mercury])
 	planet_label = ['Sun','Mercury']
 
-	plot_planet_orbit(x_mercury, y_mercury, 'Mercury','The Mercury orbit',hold=True)
+	plot_planet_orbit(x_mercury, y_mercury, 'Mercury','The Mercury orbit 10 000 steps/year',hold=True)
 	plt.plot(x_sun,y_sun,'rx',label='Sun')
-	plt.plot(xp,yp,'rx')
+	plt.plot(xp[-1],yp[-1],'yx',label='perihelion')
 	plt.legend()
 	plt.show()
-
+	'''
 #two_body_problem()
-conservation()
+#conservation()
 #three_body_problem()
 #full_system()
-#mercury_perihelion()
+mercury_perihelion()
