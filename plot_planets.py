@@ -15,7 +15,7 @@ def plot_formatting(fam='serif',fam_font='Computer Modern Roman',font_size=14,ti
 	plt.xticks(fontsize=tick_size)
 	plt.yticks(fontsize=tick_size)
 
-def plot_planet_orbit(x,y,planet_label='_nolegend_',x_label='position $x(t)$ [AU]', title_label=' ',hold=False):
+def plot_planet_orbit(x,y,planet_label='_nolegend_', title_label=' ',hold=False):
 	""" Plots planet orbits, entire system, or a singla planet.
 		Use hold=True to add plots or do other things in the function calling on this one"""
 
@@ -28,8 +28,8 @@ def plot_planet_orbit(x,y,planet_label='_nolegend_',x_label='position $x(t)$ [AU
 		plt.plot(x,y,label=planet_label)
 
 	plt.axis('equal')
-	plt.xlabel('position $x(t)$ [AU]')
-	plt.ylabel('position $y(t)$ [AU]')
+	plt.xlabel('position $x$ [AU]')
+	plt.ylabel('position $y(x)$ [AU]')
 	plt.title(title_label)
 	plt.tight_layout()
 	if hold !=True: 
@@ -39,7 +39,7 @@ def plot_planet_orbit(x,y,planet_label='_nolegend_',x_label='position $x(t)$ [AU
 def plot_conserved(x,y,plot_label,y_label,title_label='   ',hold=False,):
 	""" Plots the conserved quantities kinetic and potential energy, and the angular momentum
 		Use hold=True to add plots or do other things in the function calling on this one"""
-	#plot_formatting()
+	plot_formatting()
 	if y.ndim> 1: # if x is a array of arrays
 		[plt.plot(x, y[i], label=plot_label[i]) for i in range(len(y[:,0]))]
 		#if planet_label !='_nolegend_': plt.legend()
@@ -51,14 +51,15 @@ def plot_conserved(x,y,plot_label,y_label,title_label='   ',hold=False,):
 	if hold==False:
 		plt.title(title_label)
 		plt.legend()
+		plt.tight_layout()
 		plt.show()
 
 def two_body_problem():
 	""" Plots the orbit of the Sun-Earth system"""
 
-	N1 = np.genfromtxt('exercice_3b_se_euler.txt')
-	N2 = np.genfromtxt('exercice_3b_se_verlet.txt')
-
+	N1 = np.genfromtxt('earth_10000_euler.txt')
+	N2 = np.genfromtxt('earth_10000_verlet.txt')
+	nsteps = 10000
 	x_sun_e, y_sun_e, z_sun_e 			= N1[:,0], N1[:,1], N1[:,2]						 							 
 	x_earth_e, y_earth_e, z_earth_e 	= N1[:,3], N1[:,4], N1[:,5]
 
@@ -69,7 +70,7 @@ def two_body_problem():
 	y_planet = np.array([y_sun_e, y_earth_e, y_sun_v, y_earth_v])
 	planet_label = ['_nolegend_','Earth Euler','_nolegend_','Earth V-Verlet']
 
-	plot_planet_orbit(x_planet, y_planet, planet_label,'Two-body-problem Sun-Earth')
+	plot_planet_orbit(x_planet, y_planet, planet_label,title_label='Two-body-problem Sun-Earth %d steps/year' % nsteps)
 
 def conservation():
 	""" Plots the conserved quantities kinetic energy, potential energy, angular momentum
@@ -84,20 +85,20 @@ def conservation():
 	t = np.linspace(0,100,len(Lv))
 	
 	# put in one array for plotting purposes
+
 	K = np.array([Ke, Kv])
 	V = np.array([Ve, Vv])
+	Etot = K+V
 	L = np.array([Le, Lv])
 	plot_label = ['Euler','V-Verlet']
-	#plot_label =['V-Verlet']
-	plot_conserved(t, K, hold=False, plot_label=plot_label, y_label='Kinetic Energy [$M_\odot$ AU$^2/$yr$^2$]')
-	#plot_conserved(t, V, hold=False, plot_label=plot_label, y_label='Potential Energy [$M_\odot$ AU$^2/$yr$^2$]')
 	plot_conserved(t, L, hold=False, plot_label=plot_label, y_label='Angular momentum [$M_\odot$ AU$^2/$yr]')
+	plot_conserved(t,np.array([Ke,Ve,Etot[0]]), hold=False, plot_label=['$E_k$','$E_p$','$E_{tot}$'],y_label='Energy [$M_\odot$ AU$^2/$yr$^2$]',title_label='Energy conservation (Euler)')
+	plot_conserved(t,np.array([Kv,Vv,Etot[0]]), hold=False, plot_label=['$E_k$','$E_p$','$E_{tot}$'],y_label='Energy [$M_\odot$ AU$^2/$yr$^2$]',title_label='Energy conservation (VV)')
 
 
 def three_body_problem():
 	""" Plots orbits of Sun-Earth-Jupiter system """
 
-	N = np.genfromtxt('exercice_3f_je.txt')
 	N = np.genfromtxt('exercice_3e.txt')
 
 	x_sun, y_sun, z_sun 			= N[:,0], N[:,1], N[:,2]						 							 
@@ -108,7 +109,16 @@ def three_body_problem():
 	x_planet = np.array([x_sun, x_earth, x_jupiter])
 	y_planet = np.array([y_sun, y_earth, y_jupiter])
 	planet_label = ['Sun','Earth','Jupiter']
-	plot_planet_orbit(x_planet, y_planet, planet_label,'Three-body-problem Sun-Earth-Jupiter')
+
+	nTimesteps = 1000 #[5,10,100,1000]
+	'''
+	#When calculating for different Jupiter masses
+	mass = [10,100]
+	title_label ='Sun-Earth-Jupiter, %dM_J, %d steps/year' %(mass,nTimesteps)
+	'''
+	title_label='Three-body-problem Sun-Earth-Jupiter (%d steps/year)' %nTimesteps
+	
+	plot_planet_orbit(x_planet, y_planet, planet_label,title_label=title_label)
 
 def full_system():
 	"""plots orbit of the entire classical solar system"""
@@ -132,11 +142,10 @@ def full_system():
 	y_planet=np.array([y_sun,y_mercury,y_venus,y_earth,y_mars,y_jupiter,y_saturn,y_uranus,y_neptune,y_pluto])
 	planet_label = ['Sun','Mercury','Venus','Earth','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto']
 
-	plot_planet_orbit(x_planet, y_planet, planet_label,'The classic solar system')
+	plot_planet_orbit(x_planet, y_planet, planet_label,title_label='The classic solar system')
 
 def mercury_perihelion():
 	"""Plots Mercury orbit, calculates the perihelion angle"""
-	#N1 = np.genfromtxt('mercury_1000_orbit.txt')
 	N1 = np.genfromtxt('mercury_1000_orbit.txt')	
 
 	N3 = np.genfromtxt('mercury_angle_10_7_gr.txt')
@@ -180,9 +189,32 @@ def mercury_perihelion():
 	plt.plot(xp[-1],yp[-1],'rx',label='perihelion')
 	plt.legend()
 	plt.show()
-	
+
+def perihelion_angles():
+	N1 = np.genfromtxt('mercury_angle_10_5_gr.txt')
+	N2 = np.genfromtxt('mercury_angle_10_6.txt')
+	N3 = np.genfromtxt('mercury_angle_10_7_gr.txt')	
+
+	years = 100.
+	nTimesteps = np.array([1e5, 1e6, 1e7])
+	angles1, r1, dt1 = N1[:,0]*180*60*60/np.pi, N1[:,1], N1[:,2]*years/(years*nTimesteps[0]-1)
+	angles2, r2, dt2 = N2[:,0]*180*60*60/np.pi, N2[:,1], N2[:,2]*years/(years*nTimesteps[1]-1)
+	angles3, r3, dt3 = N3[:,0]*180*60*60/np.pi, N3[:,1], N3[:,2]*years/(years*nTimesteps[2]-1)
+
+	angles = np.array([ angles1, angles2, angles3 ])
+	time = np.array([ dt1, dt2, dt3 ])
+	plot_labels = ['$N = 10^5$','$N = 10^6$','$N = 10^7$']
+	plot_formatting()
+	[plt.plot(time[i], angles[i], label=plot_labels[i]) for i in range(0,len(angles[:,0]))]
+	plt.xlabel('time [years]')
+	plt.ylabel(r'$\theta_P$ [arcseconds]')
+	plt.title('Mercury perihelion angle for different $N$=timesteps/year')
+	plt.legend()
+	plt.show()
+
 #two_body_problem()
 #conservation()
 #three_body_problem()
-#full_system()
-mercury_perihelion()
+full_system()
+#mercury_perihelion()
+#perihelion_angles()

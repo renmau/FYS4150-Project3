@@ -36,17 +36,16 @@ void SolarSystem::calculateForcesAndEnergy()
             vec3 deltaRVector = body1.position - body2.position;
             double dr = deltaRVector.length();
 
-            //body1.force += -m_G*body1.mass*body2.mass/(dr*dr*dr)*deltaRVector;
-            //body2.force -= -m_G*body1.mass*body2.mass/(dr*dr*dr)*deltaRVector;
+            body1.force += -m_G*body1.mass*body2.mass/(dr*dr*dr)*deltaRVector;
+            body2.force -= -m_G*body1.mass*body2.mass/(dr*dr*dr)*deltaRVector;
+
+            // for different gravitational forces
             //body1.force += -m_G*body1.mass*body2.mass/pow(dr,3.95)*deltaRVector;
-            //body2.force -= -m_G*body1.mass*body2.mass/pow(dr,3.95)*deltaRVector;
+            //body2.force -= -m_G*body1.mass*body2.mass/pow(dr,3.95)*deltaRVector;}
 
-            // for mercury perihelion precession:
-            body1.force += -m_G*body1.mass*body2.mass/(dr*dr*dr)*deltaRVector;// - (3*body2.position.cross(body2.velocity).lengthSquared())/(dr*dr*dr*c*c)*deltaRVector;
-            body2.force -= -m_G*body1.mass*body2.mass/(dr*dr*dr)*deltaRVector - (3*body2.position.cross(body2.velocity).lengthSquared())/(dr*dr*dr*c*c)*deltaRVector;
-
-
-
+            // for mercury perihelion precession with GR correction:
+            //body1.force += -m_G*body1.mass*body2.mass/(dr*dr*dr)*deltaRVector*(1 + (3*body2.position.cross(body2.velocity).lengthSquared())/(dr*dr*c*c));
+            //body2.force -= -m_G*body1.mass*body2.mass/(dr*dr*dr)*deltaRVector*(1 + (3*body2.position.cross(body2.velocity).lengthSquared())/(dr*dr*c*c));
 
             m_potentialEnergy += -m_G*body1.mass*body2.mass/(dr);
         }
@@ -57,7 +56,7 @@ void SolarSystem::calculateForcesAndEnergy()
 }
 
 
-void SolarSystem::mercuryAngles(int timestep)
+void SolarSystem::mercuryAngles(int timestep,string angles_filename)
 {
     m_angle = 0;
     r_2 = r_1;
@@ -65,10 +64,10 @@ void SolarSystem::mercuryAngles(int timestep)
     r_now = (m_bodies[1].position-m_bodies[0].position).length();
 
     if(r_1<r_2 && r_1<r_now && timestep>3){
-        if(!m_file_angle.good()) {
-            m_file_angle.open("mercury_angle_10_7.txt", ofstream::out);
-            if(!m_file_angle.good()) {
-                cout << "Error opening file " << "mercury_angle_10_7.txt" << ". Aborting!" << endl;
+        if(!m_file.good()) {
+            m_file.open(angles_filename, ofstream::out);
+            if(!m_file.good()) {
+                cout << "Error opening file " << angles_filename << ". Aborting!" << endl;
                 terminate();
             }
         }
@@ -76,10 +75,8 @@ void SolarSystem::mercuryAngles(int timestep)
         double xp = m_integrator->r_rel[0];
         double yp = m_integrator->r_rel[1];
         m_angle += atan2(yp,xp);
-        m_file_angle << setprecision(10) << m_angle<<"    "<< r_1<<"      "<< setprecision(10) << timestep;
-        //m_file_angle << setprecision(10) << xp<<"    "<<setprecision(10) << yp<< "   "<<setprecision(10) <<r_1;
-        m_file_angle << endl;
-        //cout<< setprecision(10) << m_angle <<"    "<< r_1 << endl;
+        m_file << setprecision(10) << m_angle<< "   "<<setprecision(10) <<r_1<<"   "<< setprecision(10) << timestep<<"    "<< setprecision(10) << xp<<"    "<<setprecision(10) << yp;
+        m_file << endl;
     }
 
 }
@@ -93,6 +90,7 @@ void SolarSystem::setIntegrator(VelocityVerlet *integrator)
 {
     m_integrator = integrator;
 }
+
 
 double SolarSystem::totalEnergy() const
 {
@@ -114,7 +112,7 @@ vec3 SolarSystem::angularMomentum() const
     return m_angularMomentum;
 }
 
-void SolarSystem::writeToFile(string filename)
+void SolarSystem::writePositionsToFile(string filename)
 {
     if(!m_file.good()) {
         m_file.open(filename.c_str(), ofstream::out);
@@ -127,8 +125,24 @@ void SolarSystem::writeToFile(string filename)
 
     for(CelestialBody &body : m_bodies) {
         m_file << setprecision(10) << body.position.x() << " " << setprecision(10) << body.position.y() << " " << setprecision(10) << body.position.z() << " ";
+
     }
+
     m_file << endl;
+}
+
+void SolarSystem::writeEnergyToFile(string energy_filename)
+{
+    if(!m_file_energy.good()) {
+        m_file_energy.open(energy_filename, ofstream::out);
+        if(!m_file_energy.good()) {
+            cout << "Error opening file " << energy_filename<< ". Aborting!" << endl;
+            terminate();
+        }
+    }
+
+    m_file_energy << setprecision(30) << m_kineticEnergy << " " << setprecision(30) << m_potentialEnergy << " " << setprecision(30) << m_angularMomentum << " ";
+    m_file_energy << endl;
 }
 
 std::vector<CelestialBody> &SolarSystem::bodies()

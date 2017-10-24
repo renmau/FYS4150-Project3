@@ -27,11 +27,11 @@ SolarSystem TwoBodyProblem(){
     return solarSystem;
 }
 
-SolarSystem ThreeBodyProblem(bool fixed_CM){
+SolarSystem ThreeBodyProblem(bool fixedCM){
     vec3 vJ(0, sqrt(4*M_PI*M_PI/5.2), 0);
 
     //For unmoving center-of-mass of three body system jupiter,earth,sun
-    if (fixed_CM == true){
+    if (fixedCM == true){
         SolarSystem solarSystem;
         double mE = 3e-6;
         double mJ = 9.5e-4;
@@ -85,10 +85,10 @@ SolarSystem FullSystem(){
     return solarSystem;
 }
 
-SolarSystem MercuryPerihelionPrecession(){
+SolarSystem MercuryPerihelionPrecession(bool &writeAngles){
     // For Mercury perihelion precession:
     SolarSystem solarSystem;
-
+    writeAngles = true;
     double mM = 1.65e-7;
     vec3 vM(0,12.44,0);
     vec3 rM = vec3(0.3075, 0, 0);
@@ -99,21 +99,29 @@ SolarSystem MercuryPerihelionPrecession(){
 
     return solarSystem;
 }
+void anglesSetintegrator( double dt){
+    SolarSystem solarSystem;
+    VelocityVerlet integrator(dt);
+    solarSystem.setIntegrator(&integrator);
+}
 int main(int numArguments, char **arguments)
 {
     char *outfilename;
     outfilename = arguments[1];
     double years = 100.;
-    int numTimesteps = years*10000000.;
+    int numTimesteps = years*100.;
     double dt = years / (numTimesteps-1);
     if(numArguments >= 3) numTimesteps = atoi(arguments[2]);
-    bool fixed_CM = true;
-    bool mercury = true;
+    bool fixedCM = true;
+    bool writeMercuryAngles;
+    bool writeEnergy = false;
+    std::string energyfilename ="2body_verlet.txt";
+    std::string anglefilename = "angles_gr.txt";
 
-    //SolarSystem solarSystem = TwoBodyProblem();
-    //SolarSystem solarSystem = ThreeBodyProblem(fixed_CM);
+    SolarSystem solarSystem = TwoBodyProblem();
+    //SolarSystem solarSystem = ThreeBodyProblem(fixedCM);
     //SolarSystem solarSystem = FullSystem();
-    SolarSystem solarSystem = MercuryPerihelionPrecession();
+    //SolarSystem solarSystem = MercuryPerihelionPrecession(writeMercuryAngles);
 
 
     // To get a list (a reference, not copy) of all the bodies in the solar system, we use the .bodies() function
@@ -129,39 +137,32 @@ int main(int numArguments, char **arguments)
     //Euler integrator(dt);
     VelocityVerlet integrator(dt);
 
-    //solarSystem.writeToFile(outfilename);     // get initial values in text file as well
-    solarSystem.calculateForcesAndEnergy();
-    solarSystem.setIntegrator(&integrator);
-    //write initial energy to file:
-    solarSystem.calculateForcesAndEnergy();
-    ofstream ofile;
-    ofile.open("ignore_t.txt");
-    ofile<<setprecision(30) << solarSystem.kineticEnergy() <<"  "<< setprecision(30) << solarSystem.potentialEnergy()<<"  "<< setprecision(30) << solarSystem.angularMomentum().length()<<endl;
-    ofile<<endl;
-    ofile.close();
+    // write initial values to file, positions and energies + angular momentum
+    solarSystem.writePositionsToFile(outfilename);
+
+    if (writeEnergy==true){
+        solarSystem.calculateForcesAndEnergy();
+        solarSystem.writeEnergyToFile( energyfilename );}
+
+    if (writeMercuryAngles==true){anglesSetintegrator(dt);}
+
+
 
     clock_t start1, finish1;
     start1 = clock();
 
     // forward loop
     for(int timestep=0; timestep<numTimesteps; timestep++) {
-        solarSystem.mercuryAngles(timestep);
+
+        if (writeMercuryAngles==true) {solarSystem.mercuryAngles(timestep,anglefilename);}
 
         integrator.integrateOneStep(solarSystem);
-        //if(timestep>(numTimesteps-numTimesteps/years)){
-        //solarSystem.writeToFile(outfilename);//}
+        solarSystem.writePositionsToFile(outfilename);
 
-        //write energy to file for each step to test conservation:
-        solarSystem.calculateForcesAndEnergy();
-
-        //ofstream ofile;
-        //ofile.open("ignore.txt",ofstream::app);
-        //ofile.open("ignore.txt",ofstream::app);
-        //ofile<<setprecision(30) << solarSystem.kineticEnergy() <<"  "<< setprecision(30) << solarSystem.potentialEnergy()<<"  "<< setprecision(30) << solarSystem.angularMomentum().length()<<endl;
+        if (writeEnergy==true){solarSystem.writeEnergyToFile(energyfilename);}
 
     }
-    //ofile<<endl;
-    //ofile.close();
+
 
     finish1=clock();
     double timeused1 = (double)(finish1-start1)/(CLOCKS_PER_SEC);
