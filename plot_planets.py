@@ -15,12 +15,12 @@ def plot_formatting(fam='serif',fam_font='Computer Modern Roman',font_size=14,ti
 	plt.xticks(fontsize=tick_size)
 	plt.yticks(fontsize=tick_size)
 
-def plot_planet_orbit(x,y,planet_label='_nolegend_',title_label=' ',hold=False):
+def plot_planet_orbit(x,y,planet_label='_nolegend_',x_label='position $x(t)$ [AU]', title_label=' ',hold=False):
 	""" Plots planet orbits, entire system, or a singla planet.
 		Use hold=True to add plots or do other things in the function calling on this one"""
 
 	plot_formatting()
-	if isinstance(y[0],np.ndarray)==True: # if x is a array of arrays
+	if y.ndim>1: # if y is a array of arrays
 		if planet_label =='_nolegend_': planet_label=['_nolegend_' for i in range(len(y[:,0]))]
 		[plt.plot(x[i], y[i], label=planet_label[i]) for i in range(len(y[:,0]))]
 		#if planet_label !='_nolegend_': plt.legend()
@@ -36,11 +36,11 @@ def plot_planet_orbit(x,y,planet_label='_nolegend_',title_label=' ',hold=False):
 		plt.legend()
 		plt.show()
 
-def plot_conserved(x,y,plot_label,y_label,hold=False):
+def plot_conserved(x,y,plot_label,y_label,title_label='   ',hold=False,):
 	""" Plots the conserved quantities kinetic and potential energy, and the angular momentum
 		Use hold=True to add plots or do other things in the function calling on this one"""
 	#plot_formatting()
-	if isinstance(y[0],np.ndarray)==True: # if x is a array of arrays
+	if y.ndim> 1: # if x is a array of arrays
 		[plt.plot(x, y[i], label=plot_label[i]) for i in range(len(y[:,0]))]
 		#if planet_label !='_nolegend_': plt.legend()
 	else: 	plt.plot(x,y,label=plot_label)
@@ -49,6 +49,7 @@ def plot_conserved(x,y,plot_label,y_label,hold=False):
 	plt.ylabel(y_label)
 	plt.tight_layout()
 	if hold==False:
+		plt.title(title_label)
 		plt.legend()
 		plt.show()
 
@@ -85,7 +86,7 @@ def conservation():
 	# put in one array for plotting purposes
 	K = np.array([Ke, Kv])
 	V = np.array([Ve, Vv])
-	L = np.array([Le,Lv])
+	L = np.array([Le, Lv])
 	plot_label = ['Euler','V-Verlet']
 	#plot_label =['V-Verlet']
 	plot_conserved(t, K, hold=False, plot_label=plot_label, y_label='Kinetic Energy [$M_\odot$ AU$^2/$yr$^2$]')
@@ -135,37 +136,51 @@ def full_system():
 
 def mercury_perihelion():
 	"""Plots Mercury orbit, calculates the perihelion angle"""
-	#N1 = np.genfromtxt('mercury_10000_orbit.txt')
-	N2 = np.genfromtxt('mercury_10000_angle.txt')
-	N3 = np.genfromtxt('mercury_angle_10_7.txt')
+	#N1 = np.genfromtxt('mercury_1000_orbit.txt')
+	N1 = np.genfromtxt('mercury_1000_orbit.txt')	
+
+	N3 = np.genfromtxt('mercury_angle_10_7_gr.txt')
+	N4 = np.genfromtxt('mercury_angle_10_7_Newton.txt')
+
+	nTimesteps=1e7
+	years = 100.
 	perihel=0.3075 # AU
-	perangle = 43*np.pi/(180*60*60)
+	perangle = 43. # arcseconds
+	print 'correct angle', perangle, ' arcseconds,   correct perihel', perihel
 
-	print 'correct angle', perangle, 'correct perihel', perihel
+	# sun and mercury positions
+	x_sun, y_sun, z_sun 			= N1[:,0], N1[:,1], N1[:,2]						 							 
+	x_mercury, y_mercury, z_mercury	= N1[:,3], N1[:,4], N1[:,5]
 
-	#x_sun, y_sun, z_sun 			= N1[:,0], N1[:,1], N1[:,2]						 							 
-	#x_mercury, y_mercury, z_mercury	= N1[:,3], N1[:,4], N1[:,5]
+	# constains already computed angles, the timesteps and r in perihelion for GR correction
+	angles_gr, r_gr,dt_gr , = N3[:,0]*180*60*60/np.pi, N3[:,1], N3[:,2]*years/(years*nTimesteps-1)
+	xp, yp = N3[:,3], N3[:,4]
 
-	# contains x,y coordinates and rp
-	xp,yp,rp = N2[:,0],N2[:,1],N2[:,2]
-	angles1 = np.arctan2(yp,xp)
-	print 'calculated angle1: ', angles1[-1], ', rp1: ', rp[-1]
+	# constains already computed angles, the timesteps and r in perihelion for Newtonian gravity	
+	angles_n, r_n,dt_n = N4[:,0]*180*60*60/np.pi, N4[:,1], N4[:,2]*years/(years*nTimesteps-1)
 
-	# constains already computed angles, the timesteps and rp
-	angles2, r,t = N3[:,0],N3[:,1],N3[:,2]
-	print 'calculated angle2: ',angles2[-1],', rp2:',r[-1]
+	print 'calculated angle GR: ',angles_gr[-1],' arcsecond,  rp:',r_gr[-1]
+	print 'calculated angle newton: ',angles_n[-1],' arcsecond,  rp:',r_n[-1]
 
-	'''
+	# plot the perihelion angles
+	plot_formatting()
+	plt.plot(dt_gr,angles_gr,dt_n,angles_n)
+	plt.xlabel('time [years]')
+	plt.ylabel(r'$\theta_P$ [arcseconds]')
+	plt.title('Perihelion angle of Mercury for $10^7$ steps/year')
+	plt.legend(['GR gravity','Newtonian gravity'])	
+	plt.show()
+
 	x_planet=np.array([x_sun,x_mercury])
 	y_planet=np.array([y_sun,y_mercury])
 	planet_label = ['Sun','Mercury']
 
 	plot_planet_orbit(x_mercury, y_mercury, 'Mercury','The Mercury orbit 10 000 steps/year',hold=True)
-	plt.plot(x_sun,y_sun,'rx',label='Sun')
-	plt.plot(xp[-1],yp[-1],'yx',label='perihelion')
+	plt.plot(x_sun,y_sun,'gx',label='Sun')
+	plt.plot(xp[-1],yp[-1],'rx',label='perihelion')
 	plt.legend()
 	plt.show()
-	'''
+	
 #two_body_problem()
 #conservation()
 #three_body_problem()
